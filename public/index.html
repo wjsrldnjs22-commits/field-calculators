@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>현장계산기 · CBM/부피중량</title>
+  <meta name="description" content="현장에서 바로 쓰는 CBM/부피중량 계산기. 가로·세로·높이(cm)와 수량만 입력하면 총 CBM과 부피중량을 계산해줘요." />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- ✅ (선택) Google Analytics (gtag.js) -->
+  <!-- Google tag (gtag.js) - TAG_ID를 본인 값으로 바꿔서 <head> 바로 아래에 붙여줘 -->
+  <!--
+  <script async src="https://www.googletagmanager.com/gtag/js?id=TAG_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'TAG_ID');
+  </script>
+  -->
+
+  <!-- ✅ (선택) Microsoft Clarity -->
+  <!-- Clarity에서 받은 코드를 <head>에 붙여줘 -->
+  <!--
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "CLARITY_PROJECT_ID");
+  </script>
+  -->
+
+  <!-- ✅ (선택) Google AdSense -->
+  <!-- AdSense에서 받은 코드를 <head>~</head> 사이에, 가능하면 모든 페이지에 넣어줘 -->
+  <!--
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+    crossorigin="anonymous"></script>
+  -->
+
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <span>현장계산기</span>
+        <span class="badge">v0.1</span>
+      </div>
+      
+    <nav class="nav">
+      <a href="index.html" class="active">계산기</a>
+      <a href="about.html" class="">소개</a>
+      <a href="contact.html" class="">문의</a>
+      <a href="privacy.html" class="">개인정보</a>
+    </nav>
+    
+    </header>
+
+    
+<section class="hero">
+  <h1 style="margin:0 0 8px 0; font-size:22px;">📦 CBM / 부피중량 계산기</h1>
+  <div class="notice">
+    박스 <b>겉치수</b>(cm) + <b>수량</b>만 넣으면 총 <b>CBM</b>(m³)과 <b>부피중량</b>(kg)을 계산해줘.
+    <br/>※ 운송사마다 분모(5000/6000)·반올림 규칙이 다를 수 있어. 실제 청구 기준은 계약/요율표를 우선으로 봐줘.
+  </div>
+</section>
+
+<div class="grid">
+  <section class="card">
+    <h2>🧮 입력</h2>
+
+    <div class="row">
+      <div>
+        <label class="label" for="widthCm">가로 (cm)</label>
+        <input id="widthCm" inputmode="decimal" placeholder="예: 50" />
+      </div>
+      <div>
+        <label class="label" for="lengthCm">세로 (cm)</label>
+        <input id="lengthCm" inputmode="decimal" placeholder="예: 40" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label class="label" for="heightCm">높이 (cm)</label>
+        <input id="heightCm" inputmode="decimal" placeholder="예: 30" />
+      </div>
+      <div>
+        <label class="label" for="qty">수량 (개)</label>
+        <input id="qty" inputmode="numeric" value="1" />
+      </div>
+    </div>
+
+    <label class="label" for="divisorPreset">부피중량 분모</label>
+    <div class="row">
+      <div>
+        <select id="divisorPreset">
+          <option value="6000">6000 (항공/국제에서 자주)</option>
+          <option value="5000">5000 (특정 택배/특송에서 자주)</option>
+          <option value="custom">직접 입력</option>
+        </select>
+      </div>
+      <div>
+        <input id="divisorCustom" inputmode="numeric" placeholder="직접 입력 (예: 6000)" disabled />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="btnCalc">계산하기</button>
+      <button class="ghost" id="btnReset">초기화</button>
+      <button class="ghost" id="btnExample">예시값 넣기(50×40×30)</button>
+    </div>
+
+    <div id="error" class="error"></div>
+    <div id="noteDiv"></div>
+
+    <div class="notice">
+      🧠 계산 로직
+      <br/>• 총 CBM(m³) = (가×세×높이×수량) ÷ 1,000,000
+      <br/>• 부피중량(kg) = (가×세×높이×수량) ÷ 분모(5000/6000 등)
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📊 결과</h2>
+    <div class="kpi">
+      <div class="box">
+        <div class="k">총 CBM</div>
+        <div class="v" id="outCbm">—</div>
+      </div>
+      <div class="box">
+        <div class="k">부피중량</div>
+        <div class="v" id="outDim">—</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      ✅ 빠른 체크(검산)
+      <br/>50×40×30cm, 1개라면
+      <br/>• CBM = 0.060 m³
+      <br/>• 분모 6000이면 부피중량 = 10.0 kg
+      <br/>• 분모 5000이면 부피중량 = 12.0 kg
+    </div>
+
+    <div class="notice">
+      🧯 현장 실수 방지(초안)
+      <br/>• “상품”이 아니라 <b>겉박스</b> 기준으로 재기
+      <br/>• cm ↔ m 단위 착각 금지(특히 0 하나!)
+      <br/>• 수량 곱하기 빼먹지 말기
+      <br/>• 여러 박스면 박스별로 따로 계산 후 합치기
+    </div>
+  </section>
+</div>
+
+<script src="app.js"></script>
+
+
+    <footer class="footer">
+      <div class="links">
+        <a href="about.html">소개</a>
+        <a href="contact.html">문의</a>
+        <a href="privacy.html">개인정보처리방침</a>
+      </div>
+      <small>© 2026 현장계산기 · 빠르게 만들고, 데이터로 키우자</small>
+    </footer>
+  </div>
+</body>
+</html>
