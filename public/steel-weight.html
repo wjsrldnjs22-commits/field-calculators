@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steel Weight Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Steel Weight Calculator</h1>
+        </header>
+        <section class="card">
+            <h2>Parameters</h2>
+            <div class="row">
+                <div>
+                    <label class="label" for="diameterMm">Diameter (mm)</label>
+                    <input id="diameterMm" inputmode="decimal" placeholder="e.g., 10" />
+                </div>
+                <div>
+                    <label class="label" for="lengthM">Length (m)</label>
+                    <input id="lengthM" inputmode="decimal" placeholder="e.g., 6" />
+                </div>
+            </div>
+            <div class="row">
+                <button id="btnCalc">Calculate</button>
+                <button id="btnReset">Reset</button>
+            </div>
+            <div id="error" class="error"></div>
+        </section>
+
+        <section class="card">
+            <h2>📊 Result</h2>
+            <div class="kpi">
+                <div class="box">
+                    <div class="k">Total Weight (kg)</div>
+                    <div class="v" id="outWeightKg">—</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+      (function () {
+        const $ = (id) => document.getElementById(id);
+
+        const els = {
+          d: $("diameterMm"),
+          l: $("lengthM"),
+          btnCalc: $("btnCalc"),
+          btnReset: $("btnReset"),
+          outWeightKg: $("outWeightKg"),
+          error: $("error"),
+        };
+
+        function setError(msg) {
+          els.error.textContent = msg || "";
+        }
+
+        function fmt(n, digits) {
+          if (!Number.isFinite(n)) return "—";
+          return n.toFixed(digits);
+        }
+
+        function calc() {
+          setError("");
+
+          const d = Number(els.d.value);
+          const l = Number(els.l.value);
+
+          if (d <= 0 || l <= 0) {
+            setError("Please enter valid diameter and length.");
+            return;
+          }
+
+          // Steel weight formula: Weight(kg) = (Diameter(mm)^2 * 0.006165) * Length(m)
+          const weight = d * d * 0.006165 * l;
+
+          els.outWeightKg.textContent = fmt(weight, 2);
+        }
+
+        function reset() {
+            setError("");
+            els.d.value = "";
+            els.l.value = "";
+            els.outWeightKg.textContent = "—";
+        }
+
+        els.btnCalc.addEventListener("click", calc);
+        els.btnReset.addEventListener("click", reset);
+      })();
+    </script>
+</body>
+</html>
